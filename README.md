@@ -3,12 +3,12 @@
 
 StudentArchive is a Laravel-based web application designed to manage and archive student records. This application allows you to upload student data from Excel files, view student information, and search or filter records by class.
 
-### Features
+## Features
 1. Upload Student Records: Easily upload student information from Excel files.
 2. View Student Information: Display and manage student records in a clean tabular format.
 3. Search and Filter: Search students by name or contact and filter records by class.
 
-### Technologies Used
+## Technologies Used
 
 1. Laravel: A powerful PHP framework for building web applications.
 2. Excel Import: Handling Excel file imports using PhpSpreadsheet.
