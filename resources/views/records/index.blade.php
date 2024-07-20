@@ -25,6 +25,12 @@
                 </div>
                 @endif
 
+                @if (session('duplicates'))
+                <div class="alert alert-warning mt-3">
+                    {{ session('duplicates') }}
+                </div>
+                @endif
+
                 <form action="{{ route('upload') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="custom-file mb-3">
@@ -34,7 +40,7 @@
 
                     <div class="d-flex justify-content-between mt-3">
                         <button type="submit" style="flex: 1; margin: 0 5px" class="btn btn-outline-primary">UPLOAD</button>
-                        <button type="button" id="cancelButton" style="flex: 1; margin: 0 5px" class="btn btn-outline-danger">CANCEL</button>
+                        <button type="button" style="flex: 1; margin: 0 5px" class="btn btn-outline-danger" onclick="resetFileInput()">CANCEL</button>
                     </div>
                 </form>
             </div>
@@ -88,19 +94,18 @@
                 </tbody>
             </table>
 
+            <script>
+                $(".custom-file-input").on("change", function() {
+                    var fileName = $(this).val().split("\\").pop();
+                    $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+                });
+
+                function resetFileInput() {
+                    document.getElementById("customFile").value = "";
+                    document.querySelector(".custom-file-label").innerHTML = "Choose file";
+                }
+            </script>
         </div>
     </div>
 </div>
-
-<script>
-    $(".custom-file-input").on("change", function() {
-        var fileName = $(this).val().split("\\").pop();
-        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-    });
-
-    document.getElementById('cancelButton').addEventListener('click', function() {
-        document.getElementById('customFile').value = '';
-        document.querySelector('.custom-file-label').innerHTML = 'Choose file';
-    });
-</script>
 @endsection
