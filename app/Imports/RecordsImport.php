@@ -8,6 +8,8 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use Illuminate\Support\Facades\Validator;
 
 class RecordsImport {
+    public $duplicates = [];
+
     public function import($filePath) {
         try {
             $spreadsheet = IOFactory::load($filePath);
@@ -15,12 +17,14 @@ class RecordsImport {
             $data = $sheet->toArray();
 
             foreach (array_slice($data, 1) as $row) {
-                $validator = Validator::make([
+                $recordData = [
                     'name' => $row[0],
                     'class' => $row[1],
                     'level' => $row[2],
                     'parentContact' => $row[3],
-                ], [
+                ];
+
+                $validator = Validator::make($recordData, [
                     'name' => 'required|string',
                     'class' => 'required|string',
                     'level' => 'required|integer',
@@ -32,16 +36,20 @@ class RecordsImport {
                     continue;
                 }
 
-                Record::create([
-                    'name' => $row[0],
-                    'class' => $row[1],
-                    'level' => $row[2],
-                    'parentContact' => $row[3],
-                ]);
+                $existingRecord = Record::where('name', $recordData['name'])
+                    ->where('class', $recordData['class'])
+                    ->first();
+
+                if ($existingRecord) {
+                    $this->duplicates[] = $recordData;
+                    Log::info('Duplicate record found: ' . json_encode($recordData));
+                    continue;
+                }
+
+                Record::create($recordData);
             }
         } catch (\Exception $e) {
             Log::error('Error importing file: ' . $e->getMessage());
         }
     }
 }
-
